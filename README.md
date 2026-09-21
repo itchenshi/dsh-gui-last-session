@@ -41,6 +41,29 @@ its **true package name** and, because the manifest declares `dsh.bundle.patch`,
 joins the profile's bundle layer stack automatically. Bundle layers are read at boot,
 so **restart the engine** afterwards.
 
+## Permissions, dependencies and failure bounds
+
+Marketplaces that pin a commit (DSH STORE and similar) statically review the runtime
+source and report the permissions they detect. The facts:
+
+- **Runtime dependencies:** none — Node built-ins only (`node:fs/promises`,
+  `node:crypto`, `node:path`, `node:os`).
+- **Files: yes, exactly one.** The host half keeps a small pointer document at
+  `<DSH_HOME>/last-session.json`, written atomically (unique temporary name + rename)
+  so a crash cannot leave a half-written file. It records one session id and nothing
+  else; no other file is read or written and no user file is touched.
+- **Local route: yes, one.** The host registers a single page-facing route so the page
+  half can read and update that pointer; it goes through the engine's trust fence (Host
+  allow-list plus browser session cookie) and **fails closed** when the fence is
+  unavailable.
+- **Outbound network: none.** The only `fetch` calls are same-origin requests to the
+  local route above.
+- **Credentials / commands / native artifacts / lifecycle scripts:** none.
+- **Failure bounds:** a missing, unreadable or corrupt pointer is treated as
+  "nothing to hand over" — the plugin logs it and the launch simply starts on the
+  normal screen. It never blocks engine startup, and removing the plugin restores the
+  plain behaviour with no leftover state beyond that one file.
+
 ## Two halves
 
 | Half | File | Runs in | Job |
