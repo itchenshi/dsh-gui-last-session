@@ -33,8 +33,8 @@ dsh plugin --profile web add dsh-gui-last-session
 ```
 
 Restart `dsh web` (or reopen DSH GUI) afterwards. The same package can be installed
-from DSH GUI's Settings → Third-party plugins, or one-click from the
-[plugin marketplace](https://github.com/dsh-market/dsh-market).
+from DSH GUI's Settings → Third-party plugins (listed as **会话续接**), or one-click
+from the [plugin marketplace](https://github.com/dsh-market/dsh-market).
 
 The engine's `plugin` command is a thin pnpm forwarder: the package is installed by
 its **true package name** and, because the manifest declares `dsh.bundle.patch`, it
